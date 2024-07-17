@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>App Name Coding Challenge by Luke Matulis</title>
+    <title>Spotlight Events: Coding Challenge by Luke Matulis</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -43,7 +43,7 @@
             <div class="container-fluid">
                 <a class="navbar-brand" href="/index.html">
                     <img src="/img/myLogos/logo-light.png" width="40" alt="" class="d-inline-block align-text-center">
-                    APP NAME HERE
+                    Spotlight Events
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,12 +75,46 @@
 
 
     <main>
-        <div class="container mt-5">
-            <h1>APP UI Here</h1>
-            <input id="message" placeholder="Message" class="form-control" type="text">
-            <button id="btn-submit" type="button" class="btn btn-primary mt-2">Display Message</button>
-            <div class="alert alert-danger mt-5 p4 d-none" role="alert" id="alertBox">
-
+        <div class="container-xxl mt-5">
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Location
+                        </button>
+                        <ul class="dropdown-menu" id="eventDropDown">
+                            <!--Location data goes here-->
+                            <!--<li><a class="dropdown-item" href="#">LOCATION NAME</a></li>-->
+                        </ul>
+                    </div>
+                    <table class="table table-striped">
+                        <tr>
+                            <th colspan="2" id="statsHeader">
+                                Stats For All Events
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>Total Attendance</td>
+                            <td id="total">100</td>
+                        </tr>
+                        <tr>
+                            <td>Average Attendance</td>
+                            <td id="average">100</td>
+                        </tr>
+                        <tr>
+                            <td>Most Attendance</td>
+                            <td id="most">100</td>
+                        </tr>
+                        <tr>
+                            <td>Least Attendance</td>
+                            <td id="least">100</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-12 col-md-6 order-first order-md-last">
+                    <img src="/img/APPNAMELogo.svg" class="img-fluid p-2" alt="APP LOGO">
+                </div>
             </div>
         </div>
     </main>
@@ -114,9 +148,7 @@
         </script>
     <script src="/js/site.js"></script>
 
-    <script>
-        document.getElementById("btn-submit").addEventListener("click", getValues2);
-    </script>
+
 
 </body>
 
