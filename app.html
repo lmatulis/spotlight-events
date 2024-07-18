@@ -128,9 +128,26 @@
                 </div>
                 <div class="col">
                     <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEventModal">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#addEventModal">
                         Add Data
                     </button>
+                </div>
+                <div class="col">
+                    <table class="table table-striped" id="eventData">
+                        <thead class="bg-dark">
+                            <tr>
+                                <th>Event Name</th>
+                                <th>City</th>
+                                <th>State</th>
+                                <th>Attendance</th>
+                                <th>Event Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="eventBody">
+                            <!--data goes here-->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -173,11 +190,13 @@
                         <div class="row row-cols-1 gy-3">
                             <div class="col">
                                 <label for="newEventName" class="form-label">Event Name</label>
-                                <input type="text" class="form-control" id="newEventName" name="newEventName" placeholder="Event Name" required>
+                                <input type="text" class="form-control" id="newEventName" name="newEventName"
+                                    placeholder="Event Name" required>
                             </div>
                             <div class="col">
                                 <label for="newEventCity" class="form-label">City</label>
-                                <input type="text" class="form-control" id="newEventCity" name="newEventCity" placeholder="City" required>
+                                <input type="text" class="form-control" id="newEventCity" name="newEventCity"
+                                    placeholder="City" required>
                             </div>
                             <div class="col">
                                 <label for="newEventState" class="form-label">State</label>
@@ -238,7 +257,8 @@
                             </div>
                             <div class="col">
                                 <label for="newEventAttendance" class="form-label">Attendance</label>
-                                <input type="number" class="form-control" id="newEventAttendance" name="newEventAttendance" placeholder="Attendance" required>
+                                <input type="number" class="form-control" id="newEventAttendance"
+                                    name="newEventAttendance" placeholder="Attendance" required>
                             </div>
                             <div class="col">
                                 <label for="newEventDate">Date</label>
@@ -249,14 +269,23 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" onclick="saveEventData()" class="btn btn-primary" data-bs-dismiss="modal">Save</button>
+                    <button type="button" onclick="saveEventData()" class="btn btn-primary"
+                        data-bs-dismiss="modal">Save</button>
                 </div>
             </div>
         </div>
     </div>
 
-
-
+    <!--Templates-->
+    <template id="eventData-template">
+        <tr>
+            <td data-event></td>
+            <td data-city></td>
+            <td data-state></td>
+            <td data-attendance></td>
+            <td data-date></td>
+        </tr>
+    </template>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

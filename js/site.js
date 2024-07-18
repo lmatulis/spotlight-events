@@ -95,6 +95,8 @@ function buildDropDown() {
     }
 
     displayStats(currentEvents);
+
+    displayData(currentEvents);
 }
 
 function getDistinctCities(currentEvents) {
@@ -159,8 +161,8 @@ function getEvents(element) {
         });
     }
 
-
     displayStats(filteredEvents);
+    displayData(filteredEvents);
 }
 
 //save a new event from the add data form
@@ -193,6 +195,33 @@ function saveEventData() {
 
   //refresh data on page
   buildDropDown();
+}
+
+//display a grid of event data
+function displayData(events) {
+  //grabbing html 
+  let template = document.getElementById("eventData-template");
+  let eventBody = document.getElementById("eventBody");
+
+  //clear out data that is there
+  eventBody.innerHTML = "";
+
+  //loop over the events and display them
+  for(let index = 0; index < events.length; index++) {
+    let curEvent = events[index];
+
+    //import a copy of table row from the template
+    let eventRow = document.importNode(template.content, true);
+
+    //select the td based on the attribute
+    eventRow.querySelector("[data-event]").textContent = curEvent.event;
+    eventRow.querySelector("[data-city]").textContent = curEvent.city;
+    eventRow.querySelector("[data-state]").textContent = curEvent.state;
+    eventRow.querySelector("[data-attendance]").textContent = curEvent.attendance;
+    eventRow.querySelector("[data-date]").textContent = new Date(curEvent.date).toLocaleDateString();
+
+    eventBody.appendChild(eventRow);
+  }
 }
 
 buildDropDown();
