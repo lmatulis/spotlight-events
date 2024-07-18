@@ -71,8 +71,15 @@ function buildDropDown() {
     let eventDD = document.getElementById("eventDropDown");
     eventDD.innerHTML = "";
 
-    //pull events from data
-    let currentEvents = events;
+    //pull events from local storage if it exists.
+    let currentEvents = JSON.parse(localStorage.getItem("eventData"));
+    if (currentEvents == null) {
+      currentEvents = events;
+      localStorage.setItem("eventData" ,JSON.stringify(currentEvents));
+    }
+
+    let statsHeader = document.getElementById("statsHeader");
+    statsHeader.innerHTML = "Stats for All Events"
 
     //need array of distinct city names
     //look up: spread, set, map
@@ -139,16 +146,53 @@ function getEvents(element) {
 
     let filteredEvents = events;
 
+    let statsHeader = document.getElementById("statsHeader");
+    statsHeader.innerHTML = `Stats for ${city} Events`;
+
+    let currentEvents = JSON.parse(localStorage.getItem("eventData")) || events;
+
     if(city == 'All'){
-        filteredEvents = events
+        filteredEvents = currentEvents;
     }else{
-        filteredEvents = events.filter( function(item) {
+        filteredEvents = currentEvents.filter( function(item) {
             if(item.city == city) { return item; }
         });
     }
 
 
     displayStats(filteredEvents);
+}
+
+//save a new event from the add data form
+function saveEventData() {
+  //grab the current events
+  let currentEvents = JSON.parse(localStorage.getItem("eventData")) || events;
+
+  let eventObj = {};
+
+  eventObj["event"] = document.getElementById("newEventName").value;
+
+  eventObj["city"] = document.getElementById("newEventCity").value;
+
+  //the selected state from the select control
+  let stateSel = document.getElementById("newEventState")
+  eventObj["state"] = stateSel.options[stateSel.selectedIndex].text;
+
+  eventObj["attendance"] = parseInt(document.getElementById("newEventAttendance").value);
+
+  //grab the date from the form and format it by taking the time off.
+  let eventDate = document.getElementById("newEventDate").value;
+  let eventDate2 = `${eventDate} 00:00`
+  eventObj["date"] = new Date(eventDate2).toLocaleDateString();
+
+  //add to object array
+  currentEvents.push(eventObj);
+
+  //save to local storage
+  localStorage.setItem("eventData", JSON.stringify(currentEvents));
+
+  //refresh data on page
+  buildDropDown();
 }
 
 buildDropDown();
