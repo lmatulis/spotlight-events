@@ -62,10 +62,10 @@
                             <a class="nav-link active" aria-current="page" href="/code.html">Code</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Repo</a>
+                            <a class="nav-link" href="https://github.com/lmatulis/spotlight-events">Repo</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">About</a>
+                            <a class="nav-link" href="https://lmatulis-portfolio.netlify.app/">About</a>
                         </li>
                     </ul>
                 </div>
@@ -81,22 +81,317 @@
             <div class="col-12 col-lg-8">
                 <pre class="line-numbers">
                     <code class="language-javascript">
-                        //Get values from the screen and display
-                        function getValues2() {
-                        let message = document.getElementById("message").value
-                        let alertbox = document.getElementById("alertBox")
-                        
-                        alertbox.innerText = message
-                        }
-                        
-                        //document.getElementById("btn-submit").addEventListener("click", getValues2);
+                        const events = [{
+    event: "ComicCon",
+    city: "New York",
+    state: "New York",
+    attendance: 240000,
+    date: "06/01/2017"
+  },
+  {
+    event: "ComicCon",
+    city: "New York",
+    state: "New York",
+    attendance: 250000,
+    date: "06/01/2018"
+  },
+  {
+    event: "ComicCon",
+    city: "New York",
+    state: "New York",
+    attendance: 257000,
+    date: "06/01/2019"
+  },
+  {
+    event: "ComicCon",
+    city: "San Diego",
+    state: "California",
+    attendance: 130000,
+    date: "06/01/2017"
+  },
+  {
+    event: "ComicCon",
+    city: "San Diego",
+    state: "California",
+    attendance: 140000,
+    date: "06/01/2018"
+  },
+  {
+    event: "ComicCon",
+    city: "San Diego",
+    state: "California",
+    attendance: 150000,
+    date: "06/01/2019"
+  },
+  {
+    event: "HeroesCon",
+    city: "Charlotte",
+    state: "North Carolina",
+    attendance: 40000,
+    date: "06/01/2017"
+  },
+  {
+    event: "HeroesCon",
+    city: "Charlotte",
+    state: "North Carolina",
+    attendance: 45000,
+    date: "06/01/2018"
+  },
+  {
+    event: "HeroesCon",
+    city: "Charlotte",
+    state: "North Carolina",
+    attendance: 50000,
+    date: "06/01/2019"
+  },
+];
+
+
+//entry point to app
+//loads data from local storage or 'const events' 
+function buildDropDown() {
+    //grab the dropdown we want to add city names to
+    let eventDD = document.getElementById("eventDropDown");
+    eventDD.innerHTML = "";
+
+    //pull events from local storage if it exists.
+    let currentEvents = JSON.parse(localStorage.getItem("eventData"));
+    if (currentEvents == null) {
+      currentEvents = events;
+      localStorage.setItem("eventData" ,JSON.stringify(currentEvents));
+    }
+
+    let statsHeader = document.getElementById("statsHeader");
+    statsHeader.innerHTML = "Stats for All Events"
+
+    //need array of distinct city names
+    //look up: spread, set, map
+    //let distinctCities = [... new Set(currentEvents.map((event) => event.city)]
+    let distinctCities = getDistinctCities(currentEvents);
+
+    let menuItem = `&lt;li&gt;&lt;a class="dropdown-item" onclick="getEvents(this)" data-city="All">All&lt;/a>&lt;/li>`;
+    eventDD.innerHTML += menuItem;
+
+    for(let index = 0; index < distinctCities.length; index++) {
+        let menuItem = `&lt;li>&lt;a class="dropdown-item" onclick="getEvents(this)" data-city="${distinctCities[index]}">${distinctCities[index]}&lt;/a>&lt;/li>`;
+        eventDD.innerHTML += menuItem;
+    }
+
+    displayStats(currentEvents);
+
+    displayData(currentEvents);
+}
+
+
+function getDistinctCities(currentEvents) {
+
+    let distinctCities = [];
+
+    for(let index = 0; index < currentEvents.length; index++) {
+        let eventObject = currentEvents[index];
+
+        let city = eventObject.city;
+        let notFound = distinctCities.find((dc) => dc == city);
+
+        if(notFound == undefined) {
+
+            distinctCities.push(city);
+
+        }
+    }
+    return distinctCities;
+}
+
+
+//display stats for selected city
+function displayStats(events) {
+    let total = 0;
+    let average = 0;
+    let most = 0;
+    let least = events[0].attendance;
+    let currentAttendance = 0;
+
+    //display the total attendance
+    for(let index = 0; index < events.length; index++) {
+        currentAttendance = events[index].attendance;
+        total += currentAttendance;
+
+        average = total / events.length;
+        if(currentAttendance > most) { most = currentAttendance; }
+        if(currentAttendance < least) { least = currentAttendance; }
+
+    }
+    document.getElementById("average").innerHTML = Math.round(average).toLocaleString();
+    document.getElementById("most").innerHTML = most.toLocaleString();
+    document.getElementById("least").innerHTML = least.toLocaleString();
+    document.getElementById("total").innerHTML = total.toLocaleString();
+}
+
+
+//get events for a given city
+function getEvents(element) {
+    let city = element.getAttribute("data-city");
+
+    let filteredEvents = events;
+
+    let statsHeader = document.getElementById("statsHeader");
+    statsHeader.innerHTML = `Stats for ${city} Events`;
+
+    let currentEvents = JSON.parse(localStorage.getItem("eventData")) || events;
+
+    if(city == 'All'){
+        filteredEvents = currentEvents;
+    }else{
+        filteredEvents = currentEvents.filter( function(item) {
+            if(item.city == city) { return item; }
+        });
+    }
+
+    displayStats(filteredEvents);
+    displayData(filteredEvents);
+}
+
+
+//save a new event from the add data form
+function saveEventData() {
+  //grab the current events
+  let currentEvents = JSON.parse(localStorage.getItem("eventData")) || events;
+
+  let eventObj = {};
+
+  eventObj["event"] = document.getElementById("newEventName").value;
+
+  eventObj["city"] = document.getElementById("newEventCity").value;
+
+  //the selected state from the select control
+  let stateSel = document.getElementById("newEventState")
+  eventObj["state"] = stateSel.options[stateSel.selectedIndex].text;
+
+  eventObj["attendance"] = parseInt(document.getElementById("newEventAttendance").value);
+
+  //grab the date from the form and format it by taking the time off.
+  let eventDate = document.getElementById("newEventDate").value;
+  let eventDate2 = `${eventDate} 00:00`
+  eventObj["date"] = new Date(eventDate2).toLocaleDateString();
+
+  //add to object array
+  currentEvents.push(eventObj);
+
+  //save to local storage
+  localStorage.setItem("eventData", JSON.stringify(currentEvents));
+
+  //refresh data on page
+  buildDropDown();
+}
+
+
+//display a grid of event data
+function displayData(events) {
+  //grabbing html 
+  let template = document.getElementById("eventData-template");
+  let eventBody = document.getElementById("eventBody");
+
+  //clear out data that is there
+  eventBody.innerHTML = "";
+
+  //loop over the events and display them
+  for(let index = 0; index < events.length; index++) {
+    let curEvent = events[index];
+
+    //import a copy of table row from the template
+    let eventRow = document.importNode(template.content, true);
+
+    //select the td based on the attribute
+    eventRow.querySelector("[data-event]").textContent = curEvent.event;
+    eventRow.querySelector("[data-city]").textContent = curEvent.city;
+    eventRow.querySelector("[data-state]").textContent = curEvent.state;
+    eventRow.querySelector("[data-attendance]").textContent = curEvent.attendance;
+    eventRow.querySelector("[data-date]").textContent = new Date(curEvent.date).toLocaleDateString();
+
+    eventBody.appendChild(eventRow);
+  }
+}
+
+buildDropDown();
                     </code>
                 </pre>
             </div>
             <div class="col-12 col-lg-4">
-                <p>The code is structured in one function</p>
-                <h5>getValues2</h5>
-                <p>Displays the user message</p>
+                <p>
+                    This JavaScript code manages a set of event data. It uses localStorage to store and retrieve this
+                    data, allowing for dynamic updates and filtering. Let's break
+                    down what each part of the code does.
+                </p>
+
+                <h5>Data Structure Initialization</h5>
+                <p>
+                    The code begins by defining an array of objects called events. Each object represents an event with
+                    properties like
+                    event, city, state, attendance, and date. This array serves as the initial dataset for the
+                    application.
+                </p>
+
+                <h5>buildDropDown()</h5>
+                <p>
+                    This function acts as the entry point for the application and is called at the end of the script. It
+                    populates a dropdown menu with city names, allowing users to filter events based on the selected
+                    city. The dropdown is created dynamically by fetching distinct city names from the currentEvents
+                    array. It checks if there is event data stored in localStorage. If not, it initializes localStorage
+                    with the
+                    hardcoded events array. This allows the application to persist data even after page reloads. It
+                    initializes the header for statistics display and calls displayStats(currentEvents) and
+                    displayData(currentEvents) to show overall statistics and event data on the page.
+                </p>
+
+                <h5>getDistinctCities(currentEvents)</h5>
+                <p>
+                    This function returns an array of distinct city names from the given currentEvents array. It
+                    iterates
+                    over the events
+                    and adds unique city names to the distinctCities array.
+                </p>
+
+                <h5>displayStats(events)</h5>
+                <p>
+                    This function calculates and displays statistics like total, average, most, and least attendance for
+                    a set of events. It
+                    updates the relevant HTML elements with these statistics using innerHTML.
+                </p>
+
+                <h5>getEvents(element)</h5>
+                <p>
+                    This function is triggered when a user selects a city from the dropdown.
+                    It retrieves the city name from the clicked dropdown item.
+                    If "All" is selected, it shows all events; otherwise, it filters events to show only those that
+                    match the selected city.
+                    It updates the statistics header and calls displayStats(filteredEvents) and
+                    displayData(filteredEvents) to refresh the
+                    displayed information.
+                </p>
+
+                <h5>saveEventData()</h5>
+                <p>
+                    This function handles saving a new event. It gathers data from form inputs (event name, city, state,
+                    attendance, and date).
+                    It creates an event object with this data and adds it to the currentEvents array.
+                    It saves the updated events array to localStorage and refreshes the dropdown and displayed data.
+                </p>
+
+                <h5>displayData(events)</h5>
+                <p>
+                    This function displays a grid of event data.
+                    It uses a template (eventData-template) to create a table row for each event.
+                    It fills in the event details (event name, city, state, attendance, and date) into the template.
+                    It appends each filled template to the table body (eventBody), dynamically creating a table row for
+                    each event.
+                </p>
+
+                <h5>buildDropDown()</h5>
+                <p>
+                    At the end of the script, buildDropDown() is called to initialize the dropdown menu and display the
+                    default data and
+                    statistics when the application loads.
+                </p>
             </div>
         </div>
     </main>
@@ -117,7 +412,8 @@
                         <a href="#" class="text-decoration-none"><i class="bi bi-linkedin social-icons p-2"></i></a>
                     </div>
                     <div>
-                        <a href="#" class="text-decoration-none"><i class="bi bi-github social-icons p-2"></i></a>
+                        <a href="https://github.com/lmatulis/spotlight-events" class="text-decoration-none"><i
+                                class="bi bi-github social-icons p-2"></i></a>
                     </div>
                 </div>
             </div>
@@ -127,16 +423,16 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
-    </script>
+        </script>
 
     <!-- Prism JS -->
-     <script src="/js/prism.js"></script>
+    <script src="/js/prism.js"></script>
     <script>Prism.plugins.NormalizeWhitespace.setDefualts({
-        'remove-trailing': true,
-        'remove-indent': true,
-        'left-trim': true,
-        'right-trim': true
-    })</script>
+            'remove-trailing': true,
+            'remove-indent': true,
+            'left-trim': true,
+            'right-trim': true
+        })</script>
 </body>
 
 </html>
